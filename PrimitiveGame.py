@@ -8,11 +8,6 @@ def mag(arr):
     for d in arr:
         total += d**2
     return np.sqrt(total)
-def round_arr(arr):
-    rounded_arr = [round(x) for x in arr]
-    return rounded_arr
-
-
 
 # WINDOW INITIALIZATIONS
 pygame.init()
