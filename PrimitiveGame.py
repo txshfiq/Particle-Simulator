@@ -25,11 +25,13 @@ clock = pygame.time.Clock()
 fps = 60
 
 # PARAMETERS
-num_balls = 700    # Number of particles
-r = 10               # Particle Radius
-vel_comp_abs = 10  # Particle Velocity range
+T = 5
+num_balls = 500    # Number of particles
+r = 5               # Particle Radius
 mass = 6.646476406e-27
 boltz_k = 1.380649e-23
+v = np.sqrt((3*boltz_k*T)/mass)
+
 
 # ARRAY INITIALIZATIONS
 data = []
@@ -59,8 +61,8 @@ for _ in range(num_balls):
     ball = pygame.draw.circle(screen, black, center, r)
 
     # initializing particle velocities
-    v_x = random.uniform(3, 3)
-    v_y = random.uniform(3, 3)
+    v_x = v/np.sqrt(2)
+    v_y = v/np.sqrt(2)
     if v_x == 0:
         v_x = random.randint(-1, 1)
     if v_y == 0:
@@ -128,8 +130,7 @@ while not any(pygame.key.get_pressed()): # simulation stops when any key is pres
         speed_sq += speed**2
         s.append(speed)
     ke = (1/2)*mass*(speed_sq)                 # this computes the total energy of the system (in Joules)
-    avg_speed_sq = speed_sq/num_balls          # this computes the average squared speed of the system per frame
-    
+    avg_ke = ke / num_balls                    # this computes the average energy of each particle (in Joules)
     
     # computing average speed of system per frame:
     speeds_arr = np.array(s)
@@ -137,7 +138,7 @@ while not any(pygame.key.get_pressed()): # simulation stops when any key is pres
     avg_speed = np.sum(speeds_arr) / num_balls
     data.append(avg_speed)
 
-    temp = (mass*np.pi*(avg_speed**2))/(2*boltz_k)    # this computes the temperature of the system per frame
+    temp = (2/(3*boltz_k))*avg_ke     # this computes the temperature of the system per frame
 
     # text rendering:
     
@@ -146,7 +147,7 @@ while not any(pygame.key.get_pressed()): # simulation stops when any key is pres
     text_rect_1.center = (150, height-30)                                                       
     screen.blit(text_surface_1, text_rect_1)
 
-    text_surface_2 = FONT.render(f"Total Energy (U): {round(avg_speed_sq, 5)} J", True, black)
+    text_surface_2 = FONT.render(f"Total Energy (U): {round(ke, 5)} J", True, black)
     text_rect_2 = text_surface_2.get_rect()
     text_rect_2.center = (width-180, height-30)
     screen.blit(text_surface_2, text_rect_2)
